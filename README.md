@@ -1,6 +1,6 @@
 # Django SQLite
 
-Default Django settings for SQLite don't allow high concurrency. This repo reproduces the problem and shows how to fix it.
+Default Django settings for SQLite don't allow concurrent writes from multiple threads/processes. This repo reproduces the problem and shows a potential fix it.
 
 ## Reproducing the problem
 
