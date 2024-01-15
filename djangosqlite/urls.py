@@ -14,25 +14,71 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.contrib.auth.models import User
-from django.db import transaction
+from django.db import connection, transaction
 from django.http import HttpResponse
 from django.urls import path
 
+from basic_model.models import A
+
+
+def write_to_db():
+    A.objects.create()
+
+
+def read_from_db():
+    return list(A.objects.all()[:10])
+
+
+def read(_):
+    read_from_db()
+    return HttpResponse("OK")
+
+
+def write(_):
+    write_to_db()
+    return HttpResponse("OK")
+
+
+def read_write(_):
+    read_from_db()
+    write_to_db()
+    return HttpResponse("OK")
+
+
+def write_read(_):
+    write_to_db()
+    read_from_db()
+    return HttpResponse("OK")
+
 
 @transaction.atomic()
-def create_user(request):
-    for _ in User.objects.all()[:10]:
-        pass
-    random_name = User.objects.make_random_password()
-    random_password = User.objects.make_random_password()
-    User.objects.create_user(
-        username=random_name,
-        email=random_name + "@example.com",
-        password=random_password,
-    )
-    return HttpResponse(f"User created, num users: {User.objects.count()}")
+def write_read_transaction(_):
+    write_to_db()
+    read_from_db()
+    return HttpResponse("OK")
 
 
-urlpatterns = [path("admin/", admin.site.urls), path("create_user/", create_user)]
+@transaction.atomic()
+def read_write_transaction(_):
+    read_from_db()
+    write_to_db()
+    return HttpResponse("OK")
+
+
+def read_write_transaction_immediate(_):
+    connection.cursor().execute("BEGIN IMMEDIATE")
+    read_from_db()
+    write_to_db()
+    connection.cursor().execute("COMMIT")
+    return HttpResponse("OK")
+
+
+urlpatterns = [
+    path("read/", read),
+    path("write/", write),
+    path("read_write/", read_write),
+    path("write_read/", write_read),
+    path("write_read_transaction/", write_read_transaction),
+    path("read_write_transaction/", read_write_transaction),
+    path("read_write_transaction_immediate/", read_write_transaction_immediate),
+]
