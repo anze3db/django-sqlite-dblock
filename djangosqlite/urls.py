@@ -30,7 +30,6 @@ def read_from_db():
 
 
 def read(_):
-    read_from_db()
     return HttpResponse("OK")
 
 
@@ -47,6 +46,12 @@ def read_write(_):
 
 def write_read(_):
     write_to_db()
+    read_from_db()
+    return HttpResponse("OK")
+
+
+@transaction.atomic()
+def read_transaction(_):
     read_from_db()
     return HttpResponse("OK")
 
@@ -78,6 +83,7 @@ urlpatterns = [
     path("write/", write),
     path("read_write/", read_write),
     path("write_read/", write_read),
+    path("read_transaction/", read_transaction),
     path("write_read_transaction/", write_read_transaction),
     path("read_write_transaction/", read_write_transaction),
     path("read_write_transaction_immediate/", read_write_transaction_immediate),

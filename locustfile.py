@@ -19,6 +19,10 @@ class HelloWorldUser(HttpUser):
         self.client.get("write_read/")
 
     @task
+    def fetch_read_transaction(self):
+        self.client.get("read_transaction/")
+
+    @task
     def fetch_read_write_transaction(self):
         self.client.get("read_write_transaction/")
 
