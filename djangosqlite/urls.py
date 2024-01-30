@@ -17,6 +17,7 @@ Including another URLconf
 from django.db import connection, transaction
 from django.http import HttpResponse
 from django.urls import path
+from django.views.decorators.csrf import csrf_exempt
 
 from basic_model.models import A
 
@@ -33,17 +34,20 @@ def read(_):
     return HttpResponse("OK")
 
 
+@csrf_exempt
 def write(_):
     write_to_db()
     return HttpResponse("OK")
 
 
+@csrf_exempt
 def read_write(_):
     read_from_db()
     write_to_db()
     return HttpResponse("OK")
 
 
+@csrf_exempt
 def write_read(_):
     write_to_db()
     read_from_db()
@@ -56,6 +60,7 @@ def read_transaction(_):
     return HttpResponse("OK")
 
 
+@csrf_exempt
 @transaction.atomic()
 def write_read_transaction(_):
     write_to_db()
@@ -63,6 +68,7 @@ def write_read_transaction(_):
     return HttpResponse("OK")
 
 
+@csrf_exempt
 @transaction.atomic()
 def read_write_transaction(_):
     read_from_db()
@@ -70,6 +76,7 @@ def read_write_transaction(_):
     return HttpResponse("OK")
 
 
+@csrf_exempt
 def read_write_transaction_immediate(_):
     connection.cursor().execute("BEGIN IMMEDIATE")
     read_from_db()
