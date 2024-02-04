@@ -19,39 +19,25 @@ from django.http import HttpResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
-from basic_model.models import A
+from basic_model.models import Row
 
 
-def write_to_db():
-    A.objects.create()
+def write_to_db(data):
+    Row.objects.create(
+        name=data["name"],
+        campaign=data["campaign"],
+        voice=data["voice"],
+        recognize=data["recognize"],
+        inside=float(data["inside"]),
+        growth=data["growth"],
+        side=float(data["side"]),
+        yard=data["yard"],
+        discussion=data["discussion"],
+    )
 
 
 def read_from_db():
-    return list(A.objects.all()[:10])
-
-
-def read(_):
-    return HttpResponse("OK")
-
-
-@csrf_exempt
-def write(_):
-    write_to_db()
-    return HttpResponse("OK")
-
-
-@csrf_exempt
-def read_write(_):
-    read_from_db()
-    write_to_db()
-    return HttpResponse("OK")
-
-
-@csrf_exempt
-def write_read(_):
-    write_to_db()
-    read_from_db()
-    return HttpResponse("OK")
+    return list(Row.objects.all()[:10])
 
 
 @transaction.atomic()
@@ -60,27 +46,52 @@ def read_transaction(_):
     return HttpResponse("OK")
 
 
+def read(_):
+    read_from_db()
+    return HttpResponse("OK")
+
+
 @csrf_exempt
-@transaction.atomic()
-def write_read_transaction(_):
-    write_to_db()
+def write(request):
+    write_to_db(request.POST)
+    return HttpResponse("OK")
+
+
+@csrf_exempt
+def read_write(request):
+    read_from_db()
+    write_to_db(request.POST)
+    return HttpResponse("OK")
+
+
+@csrf_exempt
+def write_read(request):
+    write_to_db(request.POST)
     read_from_db()
     return HttpResponse("OK")
 
 
 @csrf_exempt
 @transaction.atomic()
-def read_write_transaction(_):
+def write_read_transaction(request):
+    write_to_db(request.POST)
     read_from_db()
-    write_to_db()
     return HttpResponse("OK")
 
 
 @csrf_exempt
-def read_write_transaction_immediate(_):
+@transaction.atomic()
+def read_write_transaction(request):
+    read_from_db()
+    write_to_db(request.POST)
+    return HttpResponse("OK")
+
+
+@csrf_exempt
+def read_write_transaction_immediate(request):
     connection.cursor().execute("BEGIN IMMEDIATE")
     read_from_db()
-    write_to_db()
+    write_to_db(request.POST)
     connection.cursor().execute("COMMIT")
     return HttpResponse("OK")
 

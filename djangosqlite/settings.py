@@ -79,6 +79,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         # "ENGINE": "djangosqlite.sqlite3", # Use for transaction_mode fix on Django 5.0 or lower
         "NAME": BASE_DIR / "db.sqlite3",
+        # "ATOMIC_REQUESTS": True,
         "OPTIONS": {
             "timeout": 5,  # 5 seconds, this is the default
             # "transaction_mode": "IMMEDIATE",  # Will only work on Django 5.1+
