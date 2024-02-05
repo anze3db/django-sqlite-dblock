@@ -1,8 +1,23 @@
 # Django SQLite
 
-This repo demonstrates a problem with Django and SQLite when using the `transaction.atomic` decorator/context manager.
+## This is a quick guide to configure SQLite with Django
 
-## Reproducing the problem
+By default SQLite is configured for use in embedded systems, and isn't suitable for high councurrency. This repository shows how to cofnfigure SQLite for high concurrency in Django.
+
+## Benchmark
+
+First, run the Django server:
+
+```
+gunicorn djangosqlite.wsgi
+```
+
+Then, run the locust benchmark:
+```
+locust --headless -u 100 -t 100s --host http://localhost:8000/
+```
+
+## Reproducing database locked errors
 
 1. Clone this repo
 2. Create a virtualenv and install the requirements
