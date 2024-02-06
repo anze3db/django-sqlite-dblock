@@ -1,7 +1,7 @@
 import multiprocessing
 
-workers = multiprocessing.cpu_count() + 1
-threads = multiprocessing.cpu_count() * 2
+workers = multiprocessing.cpu_count() - 2  # So that locust can have 2 cores
+threads = (multiprocessing.cpu_count() - 2) * 2
 proc_name = "sqlitetest"
 # Access log - records incoming HTTP requests
 accesslog = "gunicorn.access.log"
