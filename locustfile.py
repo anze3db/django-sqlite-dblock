@@ -28,9 +28,9 @@ class HelloWorldUser(HttpUser):
     def fetch_read(self):
         self.client.get("read/")
 
-    @task(10)
-    def fetch_read_transaction(self):
-        self.client.get("read_transaction/")
+    # @task(10)
+    # def fetch_read_transaction(self):
+    #     self.client.get("read_transaction/")
 
     @task
     def fetch_write(self):
@@ -44,14 +44,14 @@ class HelloWorldUser(HttpUser):
     def fetch_write_read(self):
         self.client.post("write_read/", row)
 
-    @task
-    def fetch_read_write_transaction(self):
-        self.client.post("read_write_transaction/", row)
+    # @task
+    # def fetch_read_write_transaction(self):
+    #     self.client.post("read_write_transaction/", row)
 
-    @task
-    def fetch_write_read_transaction(self):
-        self.client.post("write_read_transaction/", row)
+    # @task
+    # def fetch_write_read_transaction(self):
+    #     self.client.post("write_read_transaction/", row)
 
-    @task
-    def fetch_read_write_transaction_immediate(self):
-        self.client.post("read_write_transaction_immediate/", row)
+    # @task
+    # def fetch_read_write_transaction_immediate(self):
+    #     self.client.post("read_write_transaction_immediate/", row)

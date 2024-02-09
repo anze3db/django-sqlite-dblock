@@ -96,13 +96,86 @@ def read_write_transaction_immediate(request):
     return HttpResponse("OK")
 
 
+async def awrite_to_db(data):
+    await Row.objects.acreate(
+        name=data["name"],
+        campaign=data["campaign"],
+        voice=data["voice"],
+        recognize=data["recognize"],
+        inside=float(data["inside"]),
+        growth=data["growth"],
+        side=float(data["side"]),
+        yard=data["yard"],
+        discussion=data["discussion"],
+    )
+
+
+async def aread_from_db():
+    return Row.objects.all()[:10]
+
+
+async def aread(_):
+    res = await aread_from_db()
+    return HttpResponse("\n".join([r.name async for r in res]))
+
+
+# @transaction.atomic()
+# async def aread_transaction(_):
+#     res = await aread_from_db()
+#     return HttpResponse("\n".join([r.name async for r in res]))
+
+
+@csrf_exempt
+async def awrite(request):
+    await awrite_to_db(request.POST)
+    return HttpResponse("OK")
+
+
+@csrf_exempt
+async def aread_write(request):
+    res = await aread_from_db()
+    await awrite_to_db(request.POST)
+    return HttpResponse("\n".join([r.name async for r in res]))
+
+
+@csrf_exempt
+async def awrite_read(request):
+    await awrite_to_db(request.POST)
+    res = await aread_from_db()
+    return HttpResponse("\n".join([r.name async for r in res]))
+
+
+# @csrf_exempt
+# @transaction.atomic()
+# async def awrite_read_transaction(request):
+#     await awrite_to_db(request.POST)
+#     res = await aread_from_db()
+#     return HttpResponse("\n".join([r.name async for r in res]))
+
+
+# @csrf_exempt
+# @transaction.atomic()
+# async def aread_write_transaction(request):
+#     res = await aread_from_db()
+#     await awrite_to_db(request.POST)
+#     return HttpResponse("\n".join([r.name async for r in res]))
+
+
 urlpatterns = [
-    path("read/", read),
-    path("write/", write),
-    path("read_write/", read_write),
-    path("write_read/", write_read),
-    path("read_transaction/", read_transaction),
-    path("write_read_transaction/", write_read_transaction),
-    path("read_write_transaction/", read_write_transaction),
-    path("read_write_transaction_immediate/", read_write_transaction_immediate),
+    # path("read/", read),
+    # path("write/", write),
+    # path("read_write/", read_write),
+    # path("write_read/", write_read),
+    # path("read_transaction/", read_transaction),
+    # path("write_read_transaction/", write_read_transaction),
+    # path("read_write_transaction/", read_write_transaction),
+    # path("read_write_transaction_immediate/", read_write_transaction_immediate),
+    path("read/", aread),
+    path("write/", awrite),
+    path("read_write/", aread_write),
+    path("write_read/", awrite_read),
+    # path("read_transaction/", aread_transaction),
+    # path("write_read_transaction/", awrite_read_transaction),
+    # path("read_write_transaction/", aread_write_transaction),
+    # path("read_write_transaction_immediate/", aread_write_transaction_immediate),
 ]
